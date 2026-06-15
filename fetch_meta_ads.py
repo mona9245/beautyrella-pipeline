@@ -44,6 +44,7 @@ def fetch_meta_ads(since, until):
             "cpc": float(item.get("cpc", 0)),
             "cpm": float(item.get("cpm", 0)),
             "ctr": float(item.get("ctr", 0)),
+            "installs": int(item.get("mobile_app_installs", 0)),
         })
     return rows
 
@@ -62,6 +63,7 @@ def upload_to_bigquery(rows):
         bigquery.SchemaField("cpc", "FLOAT"),
         bigquery.SchemaField("cpm", "FLOAT"),
         bigquery.SchemaField("ctr", "FLOAT"),
+        bigquery.SchemaField("installs", "INTEGER"),
     ]
     job_config = bigquery.LoadJobConfig(
         schema=schema,
