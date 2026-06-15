@@ -25,12 +25,12 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-      
+            
       - name: 파이프라인 실행
-        env:
-          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
-          META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
-          BACKFILL_MODE: "true"
-          BACKFILL_START: "2026-02-23"
-          BACKFILL_END: "2026-05-31"
-        run: python fetch_meta_ads.py
+              env:
+                META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+                META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
+                BACKFILL_MODE: "true"
+                BACKFILL_START: "2026-02-23"
+                BACKFILL_END: "2026-05-31"
+              run: python fetch_meta_ads.py  
