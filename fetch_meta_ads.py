@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 ACCESS_TOKEN = os.environ["META_ACCESS_TOKEN"]
 AD_ACCOUNT_ID = os.environ["META_AD_ACCOUNT_ID"]
 
-BACKFILL_MODE = True
+BACKFILL_MODE = os.environ.get("BACKFILL_MODE", "false").lower() == "true"
 BACKFILL_START = os.environ.get("BACKFILL_START", "2026-02-23")
 BACKFILL_END = os.environ.get("BACKFILL_END", "2026-05-31")
 
