@@ -1,0 +1,33 @@
+name: Daily Meta Ads Pipeline
+
+on:
+  schedule:
+    - cron: "0 23 * * *"  # 매일 KST 08:00 (UTC 23:00)
+  workflow_dispatch:       # 수동 실행 버튼
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+      
+      - name: Python 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: 패키지 설치
+        run: pip install requests google-cloud-bigquery
+      
+      - name: GCP 인증
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      
+      - name: 파이프라인 실행
+        env:
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
+        run: python fetch_meta_ads.py
