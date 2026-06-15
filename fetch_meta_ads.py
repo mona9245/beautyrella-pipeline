@@ -22,7 +22,7 @@ def fetch_meta_ads(since, until):
         "access_token": ACCESS_TOKEN,
         "time_range": json.dumps({"since": since, "until": until}),
         "fields": "campaign_name,adset_name,ad_name,impressions,clicks,spend,reach,cpc,cpm,ctr",
-        "level": "campaign",
+        "level": "ad",
         "limit": 500,
     }
     response = requests.get(url, params=params)
