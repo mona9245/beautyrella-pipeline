@@ -9,8 +9,8 @@ AD_ACCOUNT_ID = os.environ["META_AD_ACCOUNT_ID"]
 
 # 과거 데이터 적재 시 아래 두 값 수정, 평소엔 yesterday 모드로 자동 실행
 BACKFILL_MODE = os.environ.get("BACKFILL_MODE", "false").lower() == "true"
-BACKFILL_START = os.environ.get("BACKFILL_START", "2025-02-23")
-BACKFILL_END = os.environ.get("BACKFILL_END", "2025-05-31")
+BACKFILL_START = os.environ.get("BACKFILL_START", "2026-02-23")
+BACKFILL_END = os.environ.get("BACKFILL_END", "2026-05-31")
 
 def fetch_meta_ads(since, until):
     url = f"https://graph.facebook.com/v19.0/{AD_ACCOUNT_ID}/insights"
