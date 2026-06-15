@@ -21,7 +21,7 @@ def fetch_meta_ads(since, until):
     params = {
         "access_token": ACCESS_TOKEN,
         "time_range": json.dumps({"since": since, "until": until}),
-        "fields": "campaign_name,adset_name,ad_name,impressions,clicks,spend,reach,cpc,cpm,ctr,mobile_app_installs",
+        "fields": "campaign_name,adset_name,ad_name,impressions,clicks,spend,reach,cpc,cpm,ctr,actions",
         "level": "ad",
         "limit": 500,
     }
@@ -44,7 +44,7 @@ def fetch_meta_ads(since, until):
             "cpc": float(item.get("cpc", 0)),
             "cpm": float(item.get("cpm", 0)),
             "ctr": float(item.get("ctr", 0)),
-            "installs": int(item.get("mobile_app_installs", 0)),
+            "installs": int(next((a["value"] for a in item.get("actions", []) if a["action_type"] == "mobile_app_install"), 0)),
         })
     return rows
 
