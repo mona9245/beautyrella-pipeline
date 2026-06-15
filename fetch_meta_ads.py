@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 ACCESS_TOKEN = os.environ["META_ACCESS_TOKEN"]
 AD_ACCOUNT_ID = os.environ["META_AD_ACCOUNT_ID"]
 
-# 과거 데이터 적재 시 아래 두 값 수정, 평소엔 yesterday 모드로 자동 실행
 BACKFILL_MODE = os.environ.get("BACKFILL_MODE", "false").lower() == "true"
 BACKFILL_START = os.environ.get("BACKFILL_START", "2026-02-23")
 BACKFILL_END = os.environ.get("BACKFILL_END", "2026-05-31")
@@ -24,6 +23,7 @@ def fetch_meta_ads(since, until):
     
     response = requests.get(url, params=params)
     data = response.json()
+    print(f"API 응답 - {json.dumps(data, ensure_ascii=False)[:500]}")
     
     if "error" in data:
         raise Exception(f"Meta API 오류 - {data['error']['message']}")
@@ -75,7 +75,6 @@ def upload_to_bigquery(rows):
 
 if __name__ == "__main__":
     if BACKFILL_MODE:
-        # 과거 데이터 날짜별 적재
         start = datetime.strptime(BACKFILL_START, "%Y-%m-%d")
         end = datetime.strptime(BACKFILL_END, "%Y-%m-%d")
         current = start
@@ -89,7 +88,6 @@ if __name__ == "__main__":
                 print(f"{date_str} - 데이터 없음")
             current += timedelta(days=1)
     else:
-        # 평소 자동 실행 - 어제 데이터
         yesterday = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
         rows = fetch_meta_ads(yesterday, yesterday)
         if rows:
