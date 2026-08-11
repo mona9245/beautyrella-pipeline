@@ -3,6 +3,19 @@ on:
   schedule:
     - cron: "0 23 * * *"
   workflow_dispatch:
+    inputs:
+      backfill_mode:
+        description: "백필 모드 (true/false)"
+        required: false
+        default: "false"
+      backfill_start:
+        description: "백필 시작일 (YYYY-MM-DD)"
+        required: false
+        default: "2026-02-23"
+      backfill_end:
+        description: "백필 종료일 (YYYY-MM-DD)"
+        required: false
+        default: "2026-05-31"
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
@@ -23,4 +36,7 @@ jobs:
         env:
           META_ACCESS_TOKEN: "${{ secrets.META_ACCESS_TOKEN }}"
           META_AD_ACCOUNT_ID: "${{ secrets.META_AD_ACCOUNT_ID }}"
+          BACKFILL_MODE: "${{ github.event.inputs.backfill_mode || 'false' }}"
+          BACKFILL_START: "${{ github.event.inputs.backfill_start }}"
+          BACKFILL_END: "${{ github.event.inputs.backfill_end }}"
         run: python fetch_meta_ads.py
