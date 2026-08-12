@@ -12,6 +12,7 @@ AD_ACCOUNT_ID = os.environ["META_AD_ACCOUNT_ID"]
 BACKFILL_MODE = os.environ.get("BACKFILL_MODE", "false").lower() == "true"
 BACKFILL_START = os.environ.get("BACKFILL_START", "2026-02-23")
 BACKFILL_END = os.environ.get("BACKFILL_END", "2026-05-31")
+ROLLING_DAYS = int(os.environ.get("ROLLING_DAYS", "7"))
 
 print(f"BACKFILL_MODE 원본값: {os.environ.get('BACKFILL_MODE', '없음')}")
 print(f"BACKFILL_MODE 변환값: {BACKFILL_MODE}")
@@ -50,6 +51,15 @@ def fetch_meta_ads(since, until):
         })
     return rows
 
+def delete_existing_date(date_str):
+    client = bigquery.Client()
+    table_id = "beautyrella-dashboard.beautyrella_ads.meta_ads"
+    query = f"DELETE FROM `{table_id}` WHERE date = @date"
+    job_config = bigquery.QueryJobConfig(
+        query_parameters=[bigquery.ScalarQueryParameter("date", "DATE", date_str)]
+    )
+    client.query(query, job_config=job_config).result()
+
 def upload_to_bigquery(rows):
     client = bigquery.Client()
     table_id = "beautyrella-dashboard.beautyrella_ads.meta_ads"
@@ -84,15 +94,21 @@ if __name__ == "__main__":
             date_str = current.strftime("%Y-%m-%d")
             print(f"{date_str} 데이터 가져오는 중...")
             rows = fetch_meta_ads(date_str, date_str)
+            delete_existing_date(date_str)
             if rows:
                 upload_to_bigquery(rows)
             else:
                 print(f"{date_str} - 데이터 없음")
             current += timedelta(days=1)
     else:
-        yesterday = (datetime.now(KST) - timedelta(days=1)).strftime("%Y-%m-%d")
-        rows = fetch_meta_ads(yesterday, yesterday)
-        if rows:
-            upload_to_bigquery(rows)
-        else:
-            print("데이터 없음")
+        # 최근 N일치를 매번 삭제 후 재수집 — 메타의 소급 설치 반영(최대 7일)을 따라잡기 위함
+        today_kst = datetime.now(KST)
+        for i in range(1, ROLLING_DAYS + 1):
+            date_str = (today_kst - timedelta(days=i)).strftime("%Y-%m-%d")
+            print(f"{date_str} 데이터 갱신 중...")
+            rows = fetch_meta_ads(date_str, date_str)
+            delete_existing_date(date_str)
+            if rows:
+                upload_to_bigquery(rows)
+            else:
+                print(f"{date_str} - 데이터 없음")
