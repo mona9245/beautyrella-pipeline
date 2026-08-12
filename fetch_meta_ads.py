@@ -2,7 +2,9 @@ import os
 import json
 import requests
 from google.cloud import bigquery
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+KST = timezone(timedelta(hours=9))
 
 ACCESS_TOKEN = os.environ["META_ACCESS_TOKEN"]
 AD_ACCOUNT_ID = os.environ["META_AD_ACCOUNT_ID"]
@@ -88,7 +90,7 @@ if __name__ == "__main__":
                 print(f"{date_str} - 데이터 없음")
             current += timedelta(days=1)
     else:
-        yesterday = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
+        yesterday = (datetime.now(KST) - timedelta(days=1)).strftime("%Y-%m-%d")
         rows = fetch_meta_ads(yesterday, yesterday)
         if rows:
             upload_to_bigquery(rows)
