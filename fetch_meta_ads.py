@@ -93,7 +93,12 @@ if __name__ == "__main__":
         while current <= end:
             date_str = current.strftime("%Y-%m-%d")
             print(f"{date_str} 데이터 가져오는 중...")
-            rows = fetch_meta_ads(date_str, date_str)
+            try:
+                rows = fetch_meta_ads(date_str, date_str)
+            except Exception as e:
+                print(f"{date_str} - 가져오기 실패, 다음 날짜로 진행: {e}")
+                current += timedelta(days=1)
+                continue
             delete_existing_date(date_str)
             if rows:
                 upload_to_bigquery(rows)
@@ -106,7 +111,11 @@ if __name__ == "__main__":
         for i in range(1, ROLLING_DAYS + 1):
             date_str = (today_kst - timedelta(days=i)).strftime("%Y-%m-%d")
             print(f"{date_str} 데이터 갱신 중...")
-            rows = fetch_meta_ads(date_str, date_str)
+            try:
+                rows = fetch_meta_ads(date_str, date_str)
+            except Exception as e:
+                print(f"{date_str} - 가져오기 실패, 다음 날짜로 진행: {e}")
+                continue
             delete_existing_date(date_str)
             if rows:
                 upload_to_bigquery(rows)
