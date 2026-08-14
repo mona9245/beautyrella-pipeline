@@ -1,6 +1,11 @@
 name: Backfill Google Ads (Manual)
 on:
   workflow_dispatch:
+    inputs:
+      script:
+        description: "실행할 스크립트 파일명"
+        required: false
+        default: "backfill_google_ads.py"
 jobs:
   run-backfill:
     runs-on: ubuntu-latest
@@ -18,4 +23,4 @@ jobs:
         with:
           credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
       - name: 백필 실행
-        run: python backfill_google_ads.py
+        run: python "${{ github.event.inputs.script || 'backfill_google_ads.py' }}"
