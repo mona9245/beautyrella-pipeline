@@ -1,0 +1,21 @@
+name: Backfill Google Ads (Manual)
+on:
+  workflow_dispatch:
+jobs:
+  run-backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+      - name: Python 설치
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: 패키지 설치
+        run: pip install google-cloud-bigquery
+      - name: GCP 인증
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
+      - name: 백필 실행
+        run: python backfill_google_ads.py
