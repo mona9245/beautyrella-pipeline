@@ -40,3 +40,11 @@ jobs:
           BACKFILL_START: "${{ github.event.inputs.backfill_start }}"
           BACKFILL_END: "${{ github.event.inputs.backfill_end }}"
         run: python fetch_meta_ads.py
+      - name: 연령별 데이터 파이프라인 실행
+        env:
+          META_ACCESS_TOKEN: "${{ secrets.META_ACCESS_TOKEN }}"
+          META_AD_ACCOUNT_ID: "${{ secrets.META_AD_ACCOUNT_ID }}"
+          BACKFILL_MODE: "${{ github.event.inputs.backfill_mode || 'false' }}"
+          BACKFILL_START: "${{ github.event.inputs.backfill_start }}"
+          BACKFILL_END: "${{ github.event.inputs.backfill_end }}"
+        run: python fetch_meta_ads_age.py
